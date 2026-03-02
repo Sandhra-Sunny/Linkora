@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Url {
@@ -13,4 +13,6 @@ model Url {
   shortCode   String   @unique
   clicks      Int      @default(0)
   createdAt   DateTime @default(now())
+
+  @@unique([originalUrl(sort: Desc), shortCode(sort: Desc)])
 }
