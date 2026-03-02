@@ -37,15 +37,21 @@ const urlController = {
 
       const record = await prisma.url.findUnique({
         where: { shortCode },
+        select: { originalUrl: true },
       });
 
       if (!record) {
         return res.status(404).json({ error: "Not found" });
       }
 
-      await prisma.url.update({
+      // no need to await here it can run asynchronously redirection priority
+      prisma.url.update({
         where: { shortCode },
         data: { clicks: { increment: 1 } },
+      }).then(() => {
+        console.log("Updated click counter");
+      }).catch((error: Error) => {
+        console.error("Error with updating count", error);
       });
 
       res.redirect(record.originalUrl);
